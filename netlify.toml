@@ -1,0 +1,18 @@
+[build]
+command = "npm ci && npm run build"
+publish = "dist"
+
+[functions]
+directory = "netlify/functions"
+node_bundler = "esbuild"
+
+[[redirects]]
+from = "/api/concerts"
+to = "/.netlify/functions/concerts"
+status = 200
+force = true
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

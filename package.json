@@ -1,0 +1,26 @@
+{
+  "name": "barcelona-sound-map",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:api": "node server/concert-api.mjs",
+    "dev": "vite --host 127.0.0.1",
+    "refresh:catalog": "node server/jobs/refresh-catalog.mjs",
+    "watch:catalog": "node server/jobs/watch-catalog.mjs",
+    "rank:catalog": "node server/jobs/rank-catalog.mjs",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.1.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3"
+  }
+}
