@@ -57,6 +57,8 @@ export interface BaseResult {
   note: string;
   confidence?: number;
   confidenceLabel?: string;
+  lat?: number;
+  lon?: number;
 }
 
 export interface ConcertResult extends BaseResult {

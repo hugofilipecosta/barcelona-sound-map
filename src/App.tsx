@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { HeartIcon, MapIcon, SearchIcon, TicketIcon } from "./components/Icons";
+import { RouteMap } from "./components/RouteMap";
 import {
   concerts as seededConcerts,
   listeningSpots as seededListeningSpots,
@@ -61,6 +62,7 @@ export function App() {
   const [mood, setMood] = useState<Mood>("Any mood");
   const [viewMode, setViewMode] = useState<ViewMode>("Concerts");
   const [savedIds, setSavedIds] = useState<Set<string>>(() => loadSavedIds());
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
   const [concertResults, setConcertResults] =
     useState<ConcertResult[]>(seededConcerts);
   const [storeResults, setStoreResults] = useState<StoreResult[]>(seededStores);
@@ -90,11 +92,15 @@ export function App() {
     [filters, concertResults, storeResults, spotResults],
   );
   const visibleResults = results.filter((result) => {
+    if (showSavedOnly && !savedIds.has(result.id)) return false;
     if (viewMode === "Concerts") return result.type === "concert";
     if (viewMode === "Record stores") return result.type === "store";
     return result.type === "spot";
   });
   const route = buildRoute(results);
+  const routeStops = [route.spot, route.store, route.concert].filter(
+    (stop): stop is SoundResult => Boolean(stop),
+  );
   const savedCount = savedIds.size;
 
   useEffect(() => {
@@ -205,7 +211,12 @@ export function App() {
           <span className="brand-mark">BSM</span>
           <span>Barcelona Sound Map</span>
         </div>
-        <button className="saved-button" type="button">
+        <button
+          className={showSavedOnly ? "saved-button active" : "saved-button"}
+          type="button"
+          aria-pressed={showSavedOnly}
+          onClick={() => setShowSavedOnly((current) => !current)}
+        >
           <HeartIcon filled={savedCount > 0} />
           <span>{savedCount} saved</span>
         </button>
@@ -291,9 +302,14 @@ export function App() {
 
           <div className="result-count">
             <span>
-              <strong>{visibleResults.length}</strong> useful matches
+              <strong>{visibleResults.length}</strong>{" "}
+              {showSavedOnly ? "saved matches" : "useful matches"}
             </span>
-            <span>{resultStatusLabel(fetchState)}</span>
+            <span>
+              {showSavedOnly
+                ? "Showing only saved results. Click “saved” again to clear."
+                : resultStatusLabel(fetchState)}
+            </span>
           </div>
 
           <div className="results-list">
@@ -308,7 +324,7 @@ export function App() {
                 />
               ))
             ) : (
-              <EmptyState />
+              <EmptyState showSavedOnly={showSavedOnly} />
             )}
           </div>
         </div>
@@ -318,14 +334,7 @@ export function App() {
             <span>Music-first stops</span>
             <strong>{selectedDateRange.label}</strong>
           </div>
-          <div className="mini-map" aria-hidden="true">
-            <span className="map-label gracia">Gracia</span>
-            <span className="map-label eixample">Eixample</span>
-            <span className="map-label raval">El Raval</span>
-            <span className="map-dot store-dot" />
-            <span className="map-dot show-dot" />
-            <span className="map-route" />
-          </div>
+          <RouteMap stops={routeStops} />
           <RouteStep
             step="01"
             label="Coffee / hi-fi"
@@ -545,7 +554,19 @@ function RouteStep({
   );
 }
 
-function EmptyState() {
+function EmptyState({ showSavedOnly }: { showSavedOnly: boolean }) {
+  if (showSavedOnly) {
+    return (
+      <div className="empty-state">
+        <h2>Nothing saved in this view yet.</h2>
+        <p>
+          Heart a result to save it, or switch tabs — saved items only show up
+          under the type and filters they match.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="empty-state">
       <h2>No confident matches yet.</h2>

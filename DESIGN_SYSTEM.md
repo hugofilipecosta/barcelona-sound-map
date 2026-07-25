@@ -4,11 +4,6 @@ Created: 2026-05-07
 
 ## Design Sources
 
-Product and interaction thinking comes from:
-
-- `../Product brain/brief/barcelona-sound-map-product-brief.md`
-- `../Product brain/design/barcelona-sound-map-design-principles.md`
-
 Visual system references:
 
 - Neobrutalism portfolio live template: https://neobrutalism-portfolio.netlify.app/

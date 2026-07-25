@@ -1,8 +1,17 @@
 import type { ConcertResult, ListeningSpotResult, StoreResult } from "../types";
 
+function daysFromToday(offsetDays: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export const concerts: ConcertResult[] = [
   {
-    id: "concert-eventbrite-poblenou-2026-05-08",
+    id: "concert-eventbrite-poblenou",
     type: "concert",
     name: "Poblenou Indie Rooms",
     venue: "Razzmatazz",
@@ -15,13 +24,13 @@ export const concerts: ConcertResult[] = [
     sourceUrl: "https://www.eventbrite.com/",
     mapUrl: "https://maps.google.com/?q=Razzmatazz+Barcelona",
     ticketUrl: "https://www.eventbrite.com/d/spain--barcelona/music--events/",
-    date: "2026-05-08",
+    date: daysFromToday(1),
     time: "22:30",
     price: "Check Eventbrite",
     note: "Provider-shaped sample. Replace with Eventbrite Search API results once the token is configured.",
   },
   {
-    id: "concert-dice-gotic-2026-05-08",
+    id: "concert-dice-gotic",
     type: "concert",
     name: "Basement Jazz Session",
     venue: "Jamboree",
@@ -34,13 +43,13 @@ export const concerts: ConcertResult[] = [
     sourceUrl: "https://dice.fm/browse/barcelona",
     mapUrl: "https://maps.google.com/?q=Jamboree+Barcelona",
     ticketUrl: "https://dice.fm/browse/barcelona",
-    date: "2026-05-08",
+    date: daysFromToday(1),
     time: "20:00",
     price: "Check DICE",
     note: "Provider-shaped sample. DICE needs partner/API-token access or an approved data partner.",
   },
   {
-    id: "concert-fnac-apolo-2026-05-09",
+    id: "concert-fnac-apolo",
     type: "concert",
     name: "Club Pulse",
     venue: "Sala Apolo",
@@ -53,13 +62,13 @@ export const concerts: ConcertResult[] = [
     sourceUrl: "https://www.fnacspectacles.com/",
     mapUrl: "https://maps.google.com/?q=Sala+Apolo+Barcelona",
     ticketUrl: "https://www.fnacspectacles.com/",
-    date: "2026-05-09",
+    date: daysFromToday(2),
     time: "23:45",
     price: "Check FNAC",
     note: "Provider-shaped sample. FNAC/France Billet catalogue access should come through the affiliate XML feed.",
   },
   {
-    id: "concert-eventbrite-gotic-2026-05-10",
+    id: "concert-eventbrite-gotic",
     type: "concert",
     name: "Sunday Groove Set",
     venue: "Harlem Jazz Club",
@@ -72,13 +81,13 @@ export const concerts: ConcertResult[] = [
     sourceUrl: "https://www.eventbrite.com/",
     mapUrl: "https://maps.google.com/?q=Harlem+Jazz+Club+Barcelona",
     ticketUrl: "https://www.eventbrite.com/d/spain--barcelona/music--events/",
-    date: "2026-05-10",
+    date: daysFromToday(3),
     time: "21:00",
     price: "Check Eventbrite",
     note: "Second Eventbrite-shaped sample for multi-date search testing.",
   },
   {
-    id: "concert-ticketmaster-eixample-2026-05-08",
+    id: "concert-ticketmaster-eixample",
     type: "concert",
     name: "Eixample Guitar Night",
     venue: "L'Auditori",
@@ -91,13 +100,13 @@ export const concerts: ConcertResult[] = [
     sourceUrl: "https://www.ticketmaster.es/",
     mapUrl: "https://maps.google.com/?q=Auditori+Barcelona",
     ticketUrl: "https://www.ticketmaster.es/",
-    date: "2026-05-08",
+    date: daysFromToday(1),
     time: "21:15",
     price: "Check Ticketmaster",
     note: "Provider-shaped sample. Replace with Ticketmaster Discovery API results once the API key is configured.",
   },
   {
-    id: "concert-ticketline-raval-2026-05-08",
+    id: "concert-ticketline-raval",
     type: "concert",
     name: "Tallers Live Session",
     venue: "Sidecar",
@@ -110,13 +119,13 @@ export const concerts: ConcertResult[] = [
     sourceUrl: "https://ticketline.sapo.pt/",
     mapUrl: "https://maps.google.com/?q=Sidecar+Barcelona",
     ticketUrl: "https://ticketline.sapo.pt/",
-    date: "2026-05-08",
+    date: daysFromToday(1),
     time: "21:45",
     price: "Check Ticketline",
     note: "Provider-shaped sample. Ticketline should be connected through an approved feed or partner export.",
   },
   {
-    id: "concert-bandsintown-gracia-2026-05-08",
+    id: "concert-bandsintown-gracia",
     type: "concert",
     name: "Tracked Artist Barcelona Date",
     venue: "Heliogabal",
@@ -129,7 +138,7 @@ export const concerts: ConcertResult[] = [
     sourceUrl: "https://www.bandsintown.com/",
     mapUrl: "https://maps.google.com/?q=Heliogabal+Barcelona",
     ticketUrl: "https://www.bandsintown.com/",
-    date: "2026-05-08",
+    date: daysFromToday(1),
     time: "20:45",
     price: "Check Bandsintown",
     note: "Provider-shaped sample. Bandsintown can fetch artist events with app_id; city-wide access needs approval.",

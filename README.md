@@ -88,7 +88,7 @@ The full setup is documented in `AI_SEARCH_PIPELINE.md`.
 
 ## Product Direction
 
-The app follows the product/design docs in `../Product brain` and intentionally avoids Hatch Conf, Manychat, and design-system transformation aesthetics.
+The product principles are: trust before abundance, source/freshness visibility on every result, a search-first surface, mobile-ready scanning, and personalization through explicit filters rather than hidden inference. The app intentionally avoids Hatch Conf, Manychat, and design-system transformation aesthetics.
 
 ## Design System Sources
 

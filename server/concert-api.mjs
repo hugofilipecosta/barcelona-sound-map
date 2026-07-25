@@ -526,6 +526,8 @@ function normalizeBarcelonaAgendaEvent(row, date) {
   const sourceUrl = "https://www.barcelona.cat/barcelonacultura/en/agenda";
   const matchedVenue = matchVenue(name, rawVenue, address);
   const venue = matchedVenue?.name ?? rawVenue;
+  const rowLat = Number(pickField(row, ["geo_epgs_4326_lat"]));
+  const rowLon = Number(pickField(row, ["geo_epgs_4326_lon"]));
 
   return {
     id: `barcelona-open-data-${pickField(row, ["register_id"]) ?? slug(name)}-${date}`,
@@ -537,6 +539,8 @@ function normalizeBarcelonaAgendaEvent(row, date) {
     ),
     address,
     distanceKm: matchedVenue?.distanceKm ?? distanceFromBarcelonaCenter(row),
+    lat: matchedVenue?.lat ?? (Number.isFinite(rowLat) ? rowLat : undefined),
+    lon: matchedVenue?.lon ?? (Number.isFinite(rowLon) ? rowLon : undefined),
     moods: mapGenres([
       name,
       venue,
@@ -580,6 +584,8 @@ function normalizeOpenStreetMapStore(element) {
     neighborhood: guessNeighborhood(`${name} ${address}`),
     address,
     distanceKm: distanceKm(41.3874, 2.1686, Number(lat), Number(lon)) || 2,
+    lat: Number.isFinite(Number(lat)) ? Number(lat) : undefined,
+    lon: Number.isFinite(Number(lon)) ? Number(lon) : undefined,
     moods: ["Vinyl digging"],
     source: "OpenStreetMap",
     freshness: "Live API",
@@ -623,6 +629,8 @@ function normalizeEventbriteEvent(event, date) {
     event.venue?.address?.localized_address_display ??
     event.venue?.address?.address_1 ??
     "Barcelona";
+  const eventbriteLat = Number(event.venue?.address?.latitude);
+  const eventbriteLon = Number(event.venue?.address?.longitude);
 
   return {
     id: `eventbrite-${event.id}`,
@@ -632,6 +640,8 @@ function normalizeEventbriteEvent(event, date) {
     neighborhood: guessNeighborhood(`${venueName} ${address}`),
     address,
     distanceKm: 2,
+    lat: Number.isFinite(eventbriteLat) ? eventbriteLat : undefined,
+    lon: Number.isFinite(eventbriteLon) ? eventbriteLon : undefined,
     moods: mapGenres([
       event.name?.text,
       event.name?.html,
@@ -727,6 +737,8 @@ function normalizeTicketmasterEvent(event, date) {
     event.dates?.start?.localTime ??
     event.dates?.start?.dateTime?.slice(11, 16) ??
     "20:00";
+  const ticketmasterLat = Number(venue?.location?.latitude);
+  const ticketmasterLon = Number(venue?.location?.longitude);
 
   return {
     id: `ticketmaster-${event.id}`,
@@ -736,6 +748,8 @@ function normalizeTicketmasterEvent(event, date) {
     neighborhood: guessNeighborhood(`${venueName} ${address}`),
     address,
     distanceKm: 2,
+    lat: Number.isFinite(ticketmasterLat) ? ticketmasterLat : undefined,
+    lon: Number.isFinite(ticketmasterLon) ? ticketmasterLon : undefined,
     moods: mapGenres(
       [
         event.classifications?.[0]?.genre?.name,
@@ -758,6 +772,8 @@ function normalizeBandsintownEvent(event, date) {
   const venue = event.venue?.name ?? "Venue TBA";
   const offers = Array.isArray(event.offers) ? event.offers : [];
   const ticketUrl = offers[0]?.url ?? event.url;
+  const bandsintownLat = Number(event.venue?.latitude);
+  const bandsintownLon = Number(event.venue?.longitude);
   return {
     id: `bandsintown-${event.id}`,
     type: "concert",
@@ -766,6 +782,8 @@ function normalizeBandsintownEvent(event, date) {
     neighborhood: guessNeighborhood(`${venue} ${event.venue?.city ?? ""}`),
     address: event.venue?.location ?? event.venue?.city ?? "Barcelona",
     distanceKm: 2,
+    lat: Number.isFinite(bandsintownLat) ? bandsintownLat : undefined,
+    lon: Number.isFinite(bandsintownLon) ? bandsintownLon : undefined,
     moods: mapGenres([event.title, ...(event.lineup ?? []), event.description]),
     source: "Bandsintown",
     freshness: "Live API",
@@ -827,7 +845,7 @@ function normalizeDate(value) {
   return value.slice(0, 10);
 }
 
-function mapGenres(values) {
+export function mapGenres(values) {
   const text = normalizeGenreText(values.join(" "));
   const moods = [];
 
@@ -894,6 +912,8 @@ function enrichConcertConfidence(concert) {
     venue,
     neighborhood: matchedVenue?.neighborhood ?? concert.neighborhood,
     distanceKm: matchedVenue?.distanceKm ?? concert.distanceKm,
+    lat: matchedVenue?.lat ?? concert.lat,
+    lon: matchedVenue?.lon ?? concert.lon,
     mapUrl: matchedVenue
       ? mapSearchUrl(matchedVenue.name, "Barcelona")
       : concert.mapUrl,
@@ -1060,7 +1080,7 @@ function degToRad(value) {
   return (value * Math.PI) / 180;
 }
 
-function dedupeConcerts(concerts) {
+export function dedupeConcerts(concerts) {
   const seen = new Set();
   return concerts.filter((concert) => {
     const key = `${concert.name.toLowerCase()}-${concert.date}-${concert.venue.toLowerCase()}`;
@@ -1070,7 +1090,7 @@ function dedupeConcerts(concerts) {
   });
 }
 
-function dedupeStores(stores) {
+export function dedupeStores(stores) {
   const seen = new Set();
   return stores.filter((store) => {
     const key = storeDedupeKey(store);
@@ -1766,8 +1786,11 @@ function escapeAttr(value) {
   return escapeHtml(value);
 }
 
+const BOM = String.fromCharCode(0xfeff);
+
 function decodeXml(value) {
   return value
+    .replaceAll(BOM, "")
     .replaceAll("<![CDATA[", "")
     .replaceAll("]]>", "")
     .replaceAll("&amp;", "&")
