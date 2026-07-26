@@ -194,8 +194,8 @@ export function App() {
           <span>Barcelona Sound Map</span>
         </div>
         <p className="topbar-subtitle">
-          Search Barcelona by concert, record store, date, neighborhood and
-          mood.
+          Discover Barcelona concerts, record stores and the best listening
+          bars
         </p>
       </header>
 
