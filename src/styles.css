@@ -68,11 +68,11 @@ a {
 
 .topbar-subtitle {
   margin: 0;
-  max-width: 360px;
   color: #fff;
   font-size: 13px;
   line-height: 1.4;
   text-align: right;
+  white-space: nowrap;
 }
 
 .brand-mark {
@@ -586,8 +586,8 @@ select:focus-visible {
   }
 
   .topbar-subtitle {
-    max-width: none;
     text-align: left;
+    white-space: normal;
   }
 
   .search-panel {
