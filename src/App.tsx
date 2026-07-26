@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { HeartIcon, MapIcon, SearchIcon, TicketIcon } from "./components/Icons";
+import { MapIcon, SearchIcon, TicketIcon } from "./components/Icons";
 import { RouteMap } from "./components/RouteMap";
 import {
   concerts as seededConcerts,
@@ -7,7 +7,6 @@ import {
   stores as seededStores,
 } from "./data/seed";
 import { buildRoute, reasonForResult, searchSoundMap } from "./lib/search";
-import { loadSavedIds, storeSavedIds } from "./lib/storage";
 import type {
   ConcertResult,
   ListeningSpotResult,
@@ -61,8 +60,6 @@ export function App() {
   const [radiusKm, setRadiusKm] = useState(4);
   const [mood, setMood] = useState<Mood>("Any mood");
   const [viewMode, setViewMode] = useState<ViewMode>("Concerts");
-  const [savedIds, setSavedIds] = useState<Set<string>>(() => loadSavedIds());
-  const [showSavedOnly, setShowSavedOnly] = useState(false);
   const [concertResults, setConcertResults] =
     useState<ConcertResult[]>(seededConcerts);
   const [storeResults, setStoreResults] = useState<StoreResult[]>(seededStores);
@@ -92,7 +89,6 @@ export function App() {
     [filters, concertResults, storeResults, spotResults],
   );
   const visibleResults = results.filter((result) => {
-    if (showSavedOnly && !savedIds.has(result.id)) return false;
     if (viewMode === "Concerts") return result.type === "concert";
     if (viewMode === "Record stores") return result.type === "store";
     return result.type === "spot";
@@ -101,26 +97,12 @@ export function App() {
   const routeStops = [route.spot, route.store, route.concert].filter(
     (stop): stop is SoundResult => Boolean(stop),
   );
-  const savedCount = savedIds.size;
-
-  useEffect(() => {
-    storeSavedIds(savedIds);
-  }, [savedIds]);
 
   useEffect(() => {
     if (autoFetched.current) return;
     autoFetched.current = true;
     void fetchConcerts();
   }, []);
-
-  function toggleSaved(id: string) {
-    setSavedIds((current) => {
-      const next = new Set(current);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
 
   async function fetchConcerts() {
     setFetchState("loading");
@@ -211,24 +193,15 @@ export function App() {
           <span className="brand-mark">BSM</span>
           <span>Barcelona Sound Map</span>
         </div>
-        <button
-          className={showSavedOnly ? "saved-button active" : "saved-button"}
-          type="button"
-          aria-pressed={showSavedOnly}
-          onClick={() => setShowSavedOnly((current) => !current)}
-        >
-          <HeartIcon filled={savedCount > 0} />
-          <span>{savedCount} saved</span>
-        </button>
+        <p className="topbar-subtitle">
+          Search Barcelona by concert, record store, date, neighborhood and
+          mood.
+        </p>
       </header>
 
       <section className="search-panel" aria-label="Search Barcelona music">
         <div className="intro">
           <h1>Find tonight's record-store stop and show.</h1>
-          <p>
-            Search Barcelona by date, neighborhood, radius, and mood. Every
-            result shows where it came from and how fresh it is.
-          </p>
         </div>
 
         <form className="filters">
@@ -302,14 +275,9 @@ export function App() {
 
           <div className="result-count">
             <span>
-              <strong>{visibleResults.length}</strong>{" "}
-              {showSavedOnly ? "saved matches" : "useful matches"}
+              <strong>{visibleResults.length}</strong> useful matches
             </span>
-            <span>
-              {showSavedOnly
-                ? "Showing only saved results. Click “saved” again to clear."
-                : resultStatusLabel(fetchState)}
-            </span>
+            <span>{resultStatusLabel(fetchState)}</span>
           </div>
 
           <div className="results-list">
@@ -319,12 +287,10 @@ export function App() {
                   key={result.id}
                   result={result}
                   reason={reasonForResult(result, filters)}
-                  saved={savedIds.has(result.id)}
-                  onToggleSaved={() => toggleSaved(result.id)}
                 />
               ))
             ) : (
-              <EmptyState showSavedOnly={showSavedOnly} />
+              <EmptyState />
             )}
           </div>
         </div>
@@ -366,13 +332,9 @@ export function App() {
 function ResultRow({
   result,
   reason,
-  saved,
-  onToggleSaved,
 }: {
   result: SoundResult;
   reason: string;
-  saved: boolean;
-  onToggleSaved: () => void;
 }) {
   const isConcert = result.type === "concert";
   const primaryUrl = isConcert ? result.ticketUrl : result.websiteUrl;
@@ -409,14 +371,6 @@ function ResultRow({
         ) : null}
       </div>
       <div className="result-actions">
-        <button
-          className="icon-button"
-          type="button"
-          aria-label={saved ? "Remove from saved" : "Save result"}
-          onClick={onToggleSaved}
-        >
-          <HeartIcon filled={saved} />
-        </button>
         <a className="action-link" href={result.mapUrl} target="_blank" rel="noreferrer">
           <MapIcon />
           <span>Map</span>
@@ -554,19 +508,7 @@ function RouteStep({
   );
 }
 
-function EmptyState({ showSavedOnly }: { showSavedOnly: boolean }) {
-  if (showSavedOnly) {
-    return (
-      <div className="empty-state">
-        <h2>Nothing saved in this view yet.</h2>
-        <p>
-          Heart a result to save it, or switch tabs — saved items only show up
-          under the type and filters they match.
-        </p>
-      </div>
-    );
-  }
-
+function EmptyState() {
   return (
     <div className="empty-state">
       <h2>No confident matches yet.</h2>

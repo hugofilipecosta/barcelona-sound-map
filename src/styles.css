@@ -55,19 +55,24 @@ a {
   border-bottom: 3px solid #fff;
 }
 
-.brand,
-.saved-button {
+.brand {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-}
-
-.brand {
   font-weight: 800;
   letter-spacing: 0;
   color: #fff;
   text-transform: uppercase;
   font-family: "Arial Black", Impact, Haettenschweiler, Arial, sans-serif;
+}
+
+.topbar-subtitle {
+  margin: 0;
+  max-width: 360px;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: right;
 }
 
 .brand-mark {
@@ -82,30 +87,14 @@ a {
   font-weight: 900;
 }
 
-.saved-button,
 .search-button,
 .view-switcher button,
-.icon-button,
 .action-link {
   border: 1px solid var(--line-strong);
   border-radius: 0;
   background: var(--paper);
   color: var(--ink);
   cursor: pointer;
-}
-
-.saved-button {
-  border-width: 3px;
-  min-height: 42px;
-  padding: 0 14px;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-
-.saved-button.active {
-  background: var(--green);
-  border-color: #000;
-  color: #000;
 }
 
 svg {
@@ -418,13 +407,6 @@ h1 {
   padding: 14px;
 }
 
-.icon-button {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-}
-
 .action-link {
   display: inline-flex;
   min-height: 42px;
@@ -603,8 +585,9 @@ select:focus-visible {
     flex-direction: column;
   }
 
-  .saved-button {
-    justify-content: center;
+  .topbar-subtitle {
+    max-width: none;
+    text-align: left;
   }
 
   .search-panel {
