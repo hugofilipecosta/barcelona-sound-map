@@ -87,6 +87,28 @@ a {
   font-weight: 900;
 }
 
+.brand-mark.loading {
+  animation: brand-mark-pulse 800ms steps(4, end) infinite;
+}
+
+@keyframes brand-mark-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    background: var(--yellow);
+  }
+  50% {
+    transform: scale(1.15);
+    background: #fff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-mark.loading {
+    animation: none;
+  }
+}
+
 .search-button,
 .view-switcher button,
 .action-link {

@@ -190,7 +190,13 @@ export function App() {
     <main className="app-shell">
       <header className="topbar">
         <div className="brand">
-          <span className="brand-mark">BSM</span>
+          <span
+            className={isConnecting(fetchState) ? "brand-mark loading" : "brand-mark"}
+            role="status"
+            aria-label={isConnecting(fetchState) ? "Fetching results" : undefined}
+          >
+            BSM
+          </span>
           <span>Barcelona Sound Map</span>
         </div>
         <p className="topbar-subtitle">
