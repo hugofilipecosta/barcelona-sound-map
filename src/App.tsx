@@ -6,7 +6,7 @@ import {
   listeningSpots as seededListeningSpots,
   stores as seededStores,
 } from "./data/seed";
-import { buildRoute, reasonForResult, searchSoundMap } from "./lib/search";
+import { buildRoute, searchSoundMap } from "./lib/search";
 import type {
   ConcertResult,
   ListeningSpotResult,
@@ -190,13 +190,7 @@ export function App() {
     <main className="app-shell">
       <header className="topbar">
         <div className="brand">
-          <span
-            className={isConnecting(fetchState) ? "brand-mark loading" : "brand-mark"}
-            role="status"
-            aria-label={isConnecting(fetchState) ? "Fetching results" : undefined}
-          >
-            BSM
-          </span>
+          <span className="brand-mark">BSM</span>
           <span>Barcelona Sound Map</span>
         </div>
         <p className="topbar-subtitle">
@@ -256,7 +250,7 @@ export function App() {
           </label>
           <button className="search-button" type="button" onClick={fetchConcerts}>
             <SearchIcon />
-            <span>{fetchButtonLabel(fetchState)}</span>
+            <span>Search</span>
           </button>
         </form>
         {isConnecting(fetchState) ? (
@@ -286,14 +280,17 @@ export function App() {
             <span>{resultStatusLabel(fetchState)}</span>
           </div>
 
+          {isConnecting(fetchState) ? (
+            <div className="content-preloader" role="status" aria-label="Fetching results">
+              <span className="brand-mark loading">BSM</span>
+              <span>Fetching results…</span>
+            </div>
+          ) : null}
+
           <div className="results-list">
             {visibleResults.length > 0 ? (
               visibleResults.map((result) => (
-                <ResultRow
-                  key={result.id}
-                  result={result}
-                  reason={reasonForResult(result, filters)}
-                />
+                <ResultRow key={result.id} result={result} />
               ))
             ) : (
               <EmptyState />
@@ -335,14 +332,9 @@ export function App() {
   );
 }
 
-function ResultRow({
-  result,
-  reason,
-}: {
-  result: SoundResult;
-  reason: string;
-}) {
+function ResultRow({ result }: { result: SoundResult }) {
   const isConcert = result.type === "concert";
+  const moodTags = result.moods.filter((mood) => mood !== "Any mood");
   const primaryUrl = isConcert ? result.ticketUrl : result.websiteUrl;
   const primaryLabel = isConcert
     ? result.ticketUrl.includes("barcelonacultura")
@@ -367,12 +359,12 @@ function ResultRow({
         <h2>{result.name}</h2>
         <p>{isConcert ? result.venue : result.specialties.join(", ")}</p>
         <p className="note">{result.note}</p>
-        {result.type !== "spot" ? (
-          <div className="trust-line">
-            <span>{result.source}</span>
-            <span>{result.freshness}</span>
-            {result.confidenceLabel ? <span>{result.confidenceLabel}</span> : null}
-            <span>{reason}</span>
+        {moodTags.length > 0 || isConcert ? (
+          <div className="detail-line">
+            {moodTags.map((mood) => (
+              <span key={mood}>{mood}</span>
+            ))}
+            {isConcert ? <span>{result.price}</span> : null}
           </div>
         ) : null}
       </div>
@@ -412,12 +404,6 @@ function SourceStatus({ state, message }: { state: FetchState; message: string }
 
 function isConnecting(fetchState: FetchState) {
   return fetchState === "loading" || fetchState === "partial";
-}
-
-function fetchButtonLabel(fetchState: FetchState) {
-  if (fetchState === "loading") return "Connecting";
-  if (fetchState === "partial") return "Update";
-  return "Fetch";
 }
 
 function getDateRange(option: DateRangeOption) {

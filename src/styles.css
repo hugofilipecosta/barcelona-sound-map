@@ -1,8 +1,8 @@
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   font-family:
     Arial, Helvetica, sans-serif;
-  --bg: #000;
+  --bg: #fff;
   --paper: #fff;
   --paper-2: #fff;
   --ink: #000;
@@ -24,8 +24,8 @@
 body {
   margin: 0;
   min-width: 320px;
-  color: #fff;
-  background: #000;
+  color: #000;
+  background: #fff;
 }
 
 button,
@@ -52,7 +52,7 @@ a {
   gap: 16px;
   min-height: 76px;
   margin-bottom: 0;
-  border-bottom: 3px solid #fff;
+  border-bottom: 3px solid #000;
 }
 
 .brand {
@@ -61,14 +61,14 @@ a {
   gap: 10px;
   font-weight: 800;
   letter-spacing: 0;
-  color: #fff;
+  color: #000;
   text-transform: uppercase;
   font-family: "Arial Black", Impact, Haettenschweiler, Arial, sans-serif;
 }
 
 .topbar-subtitle {
   margin: 0;
-  color: #fff;
+  color: var(--muted);
   font-size: 13px;
   line-height: 1.4;
   text-align: right;
@@ -80,7 +80,7 @@ a {
   width: 48px;
   height: 48px;
   place-items: center;
-  border: 3px solid #fff;
+  border: 3px solid #000;
   background: var(--yellow);
   color: #000;
   font-size: 12px;
@@ -145,10 +145,6 @@ svg.filled {
 }
 
 .intro {
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
-  gap: 24px;
-  align-items: end;
   margin-bottom: 24px;
 }
 
@@ -160,19 +156,12 @@ p {
 }
 
 h1 {
-  max-width: 820px;
   font-size: clamp(54px, 8vw, 122px);
   line-height: 0.82;
   letter-spacing: 0;
   text-transform: uppercase;
   font-family: "Arial Black", Impact, Haettenschweiler, Arial, sans-serif;
   font-weight: 900;
-}
-
-.intro p {
-  color: var(--muted);
-  font-size: 16px;
-  line-height: 1.55;
 }
 
 .filters {
@@ -339,6 +328,25 @@ h1 {
   margin-right: 4px;
 }
 
+.content-preloader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 3px solid var(--line);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.content-preloader .brand-mark {
+  width: 32px;
+  height: 32px;
+  font-size: 10px;
+}
+
 .results-list {
   display: grid;
   gap: 10px;
@@ -376,14 +384,14 @@ h1 {
 }
 
 .result-topline,
-.trust-line {
+.detail-line {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
 }
 
 .result-topline span,
-.trust-line span {
+.detail-line span {
   border: 1px solid var(--line);
   border-width: 2px;
   border-radius: 0;
@@ -418,7 +426,7 @@ h1 {
   color: var(--ink);
 }
 
-.trust-line {
+.detail-line {
   margin-top: 12px;
 }
 
@@ -583,7 +591,6 @@ select:focus-visible {
 }
 
 @media (max-width: 1080px) {
-  .intro,
   .workspace {
     grid-template-columns: 1fr;
   }
@@ -622,12 +629,7 @@ select:focus-visible {
   }
 
   .intro {
-    gap: 12px;
     margin-bottom: 18px;
-  }
-
-  .intro p {
-    font-size: 14px;
   }
 
   .filters,
