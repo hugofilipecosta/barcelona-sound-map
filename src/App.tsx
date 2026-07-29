@@ -40,7 +40,7 @@ const moods: Mood[] = [
 
 type ViewMode = "Concerts" | "Record stores" | "Listening bars";
 type FetchState = "idle" | "loading" | "partial" | "live" | "fallback" | "error";
-type DateRangeOption = "this-week" | "next-week" | "this-month";
+type DateRangeOption = "this-week" | "next-week" | "this-month" | "next-month";
 
 interface ApiPayload {
   concerts?: ConcertResult[];
@@ -57,7 +57,7 @@ export function App() {
   const [dateRange, setDateRange] = useState<DateRangeOption>("this-week");
   const [neighborhood, setNeighborhood] =
     useState<Neighborhood>("All Barcelona");
-  const [radiusKm, setRadiusKm] = useState(4);
+  const [radiusKm, setRadiusKm] = useState(12);
   const [mood, setMood] = useState<Mood>("Any mood");
   const [viewMode, setViewMode] = useState<ViewMode>("Concerts");
   const [concertResults, setConcertResults] =
@@ -214,6 +214,7 @@ export function App() {
               <option value="this-week">This week</option>
               <option value="next-week">Next week</option>
               <option value="this-month">This month</option>
+              <option value="next-month">Next month</option>
             </select>
           </label>
           <label>
@@ -238,6 +239,7 @@ export function App() {
               <option value={2}>2 km</option>
               <option value={4}>4 km</option>
               <option value={8}>8 km</option>
+              <option value={12}>12 km</option>
             </select>
           </label>
           <label>
@@ -425,6 +427,16 @@ function getDateRange(option: DateRangeOption) {
       start: toDateInputValue(today),
       end: toDateInputValue(end),
       label: "This month",
+    };
+  }
+
+  if (option === "next-month") {
+    const start = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    const end = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+    return {
+      start: toDateInputValue(start),
+      end: toDateInputValue(end),
+      label: "Next month",
     };
   }
 
