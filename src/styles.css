@@ -553,15 +553,10 @@ h1 {
   text-transform: uppercase;
 }
 
-.route-step p,
-.route-note {
+.route-step p {
   margin-top: 6px;
   color: var(--muted);
   line-height: 1.45;
-}
-
-.route-note {
-  font-size: 14px;
 }
 
 .empty-state {

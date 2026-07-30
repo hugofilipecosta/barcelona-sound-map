@@ -324,10 +324,6 @@ export function App() {
             result={route.concert}
             fallback="Try another date or broaden the mood."
           />
-          <div className="route-note">
-            The route now favors sound-first stops: record shops, hi-fi cafes,
-            listening bars, and then a show.
-          </div>
         </aside>
       </section>
     </main>
@@ -385,7 +381,7 @@ function ResultRow({ result }: { result: SoundResult }) {
           <span>{primaryLabel}</span>
         </a>
         <a className="action-link" href={result.sourceUrl} target="_blank" rel="noreferrer">
-          <span>Source</span>
+          <span>Website</span>
         </a>
       </div>
     </article>
