@@ -93,6 +93,9 @@ export function App() {
     if (viewMode === "Record stores") return result.type === "store";
     return result.type === "spot";
   });
+  const concertCount = results.filter((result) => result.type === "concert").length;
+  const storeCount = results.filter((result) => result.type === "store").length;
+  const spotCount = results.filter((result) => result.type === "spot").length;
   const route = buildRoute(results);
   const routeStops = [route.spot, route.store, route.concert].filter(
     (stop): stop is SoundResult => Boolean(stop),
@@ -194,8 +197,8 @@ export function App() {
           <span>Barcelona Sound Map</span>
         </div>
         <p className="topbar-subtitle">
-          Discover Barcelona concerts, record stores and the best listening
-          bars
+          {concertCount} concerts, {storeCount} record stores and {spotCount}{" "}
+          listening bars found
         </p>
       </header>
 
