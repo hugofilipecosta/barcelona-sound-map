@@ -176,7 +176,7 @@ h1 {
   gap: 8px;
 }
 
-.filters span {
+.filters label span {
   color: var(--muted);
   font-size: 12px;
   font-weight: 900;
@@ -224,51 +224,6 @@ h1 {
 
 .search-button span {
   min-width: 72px;
-}
-
-.source-status {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 12px;
-  align-items: center;
-  margin-top: 14px;
-  padding: 12px;
-  border: 3px solid var(--line);
-  background: var(--paper);
-  color: var(--ink);
-  box-shadow: 5px 5px 0 var(--orange);
-}
-
-.source-status > strong,
-.source-status span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 34px;
-  border: 3px solid var(--line-strong);
-  padding: 4px 9px;
-  font-size: 12px;
-  font-weight: 950;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.source-status > strong {
-  background: var(--orange);
-  color: #000;
-}
-
-.source-status span {
-  margin-right: 8px;
-  background: var(--paper);
-}
-
-.source-status p {
-  display: inline;
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 800;
 }
 
 .workspace {
@@ -625,19 +580,6 @@ select:focus-visible {
   .filters select,
   .search-button {
     min-height: 46px;
-  }
-
-  .source-status {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    padding: 10px;
-    box-shadow: 4px 4px 0 var(--orange);
-  }
-
-  .source-status p {
-    display: block;
-    margin-top: 6px;
-    font-size: 12px;
   }
 
   .result-count,

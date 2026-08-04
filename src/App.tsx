@@ -66,9 +66,6 @@ export function App() {
   const [spotResults, setSpotResults] =
     useState<ListeningSpotResult[]>(seededListeningSpots);
   const [fetchState, setFetchState] = useState<FetchState>("idle");
-  const [providerMessage, setProviderMessage] = useState(
-    "Using provider-shaped samples until access is configured.",
-  );
   const autoFetched = useRef(false);
 
   const selectedDateRange = useMemo(() => getDateRange(dateRange), [dateRange]);
@@ -109,7 +106,6 @@ export function App() {
 
   async function fetchConcerts() {
     setFetchState("loading");
-    setProviderMessage("Showing partial results while the live sources connect.");
     try {
       setStoreResults((current) => (current.length ? current : seededStores));
       setSpotResults((current) => (current.length ? current : seededListeningSpots));
@@ -126,9 +122,6 @@ export function App() {
       setStoreResults((current) => (current.length ? current : seededStores));
       setSpotResults((current) => (current.length ? current : seededListeningSpots));
       setFetchState("error");
-      setProviderMessage(
-        "Live sources are still connecting. Keeping the best partial list visible.",
-      );
     }
   }
 
@@ -163,30 +156,10 @@ export function App() {
       const state = payload.cache?.state;
       const partial = state === "warming" || state === "stale-refreshing";
       setFetchState(partial ? "partial" : "live");
-      setProviderMessage(sourceMessage(payload, partial));
       return;
     }
 
     setFetchState("fallback");
-    setProviderMessage(providerStatusMessage(payload.providerStatus));
-  }
-
-  function sourceMessage(payload: ApiPayload, partial: boolean) {
-    const countText = `${payload.concerts?.length ?? 0} concerts, ${
-      payload.stores?.length ?? 0
-    } record stores, and ${payload.spots?.length ?? 0} listening spots`;
-    if (partial) {
-      return `Showing ${countText} from cached/curated sources while APIs keep connecting.`;
-    }
-    return `Updated ${countText} from live and configured sources.`;
-  }
-
-  function providerStatusMessage(status?: Record<string, string>) {
-    return status
-      ? Object.entries(status)
-          .map(([name, value]) => `${name}: ${value}`)
-          .join(" · ")
-      : "No configured provider returned results yet.";
   }
 
   return (
@@ -258,9 +231,6 @@ export function App() {
             <span>Search</span>
           </button>
         </form>
-        {isConnecting(fetchState) ? (
-          <SourceStatus state={fetchState} message={providerMessage} />
-        ) : null}
       </section>
 
       <section className="workspace">
@@ -385,18 +355,6 @@ function ResultRow({ result }: { result: SoundResult }) {
         </a>
       </div>
     </article>
-  );
-}
-
-function SourceStatus({ state, message }: { state: FetchState; message: string }) {
-  return (
-    <div className="source-status" role="status" aria-live="polite">
-      <strong>{state === "loading" ? "Connecting" : "Partial results visible"}</strong>
-      <div>
-        <span>BSM</span>
-        <p>{message}</p>
-      </div>
-    </div>
   );
 }
 
