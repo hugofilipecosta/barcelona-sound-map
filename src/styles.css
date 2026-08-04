@@ -324,7 +324,7 @@ h1 {
 
 .result-main {
   min-width: 0;
-  padding: 16px 0;
+  padding: 16px 14px;
 }
 
 .result-topline,
