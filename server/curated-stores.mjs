@@ -32,7 +32,7 @@ export const curatedStores = [
     neighborhood: "El Raval",
     address: "Carrer de la Riera Baixa, 14",
     distanceKm: 0.8,
-    websiteUrl: "https://www.wah-wahsupersonic.com/",
+    websiteUrl: "https://maps.google.com/?q=Wah+Wah+Records+Barcelona",
     specialties: ["psych", "rare pressings", "reissues"],
   }),
   store({
@@ -152,7 +152,7 @@ export const curatedStores = [
     neighborhood: "El Raval",
     address: "Carrer Jerusalem, 32",
     distanceKm: 0.4,
-    websiteUrl: "https://www.barcelonacityrecords.net/contacto/",
+    websiteUrl: "https://maps.google.com/?q=Barcelona+City+Records+Carrer+Jerusalem+32",
     specialties: ["used vinyl", "DJ picks", "collections"],
   }),
   store({
@@ -161,7 +161,7 @@ export const curatedStores = [
     neighborhood: "El Raval",
     address: "Carrer de la Riera Baixa, 10",
     distanceKm: 0.7,
-    websiteUrl: "https://discos-edisons.com/",
+    websiteUrl: "https://maps.google.com/?q=Discos+Edison%27s+Barcelona",
     specialties: ["second hand", "oldies", "jazz", "dance classics"],
   }),
   store({
@@ -212,8 +212,8 @@ export const curatedListeningSpots = [
     neighborhood: "Gracia",
     address: "Carrer de la Riera de Sant Miquel, 59",
     distanceKm: 1.7,
-    websiteUrl: "https://es.thebar.com/locales/bares-pubs/barcelona/oblicuo-hi-fi-bar/",
-    sourceUrl: "https://es.thebar.com/locales/bares-pubs/barcelona/oblicuo-hi-fi-bar/",
+    websiteUrl: "https://maps.google.com/?q=Oblicuo+Hi-Fi+Bar+Barcelona",
+    sourceUrl: "https://maps.google.com/?q=Oblicuo+Hi-Fi+Bar+Barcelona",
     specialties: ["custom hi-fi", "vinyl sessions", "cocktails"],
     hours: "Evening bar",
     note: "Listening bar where the sound system and vinyl selection are the reason to go.",

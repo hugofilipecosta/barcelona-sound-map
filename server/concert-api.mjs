@@ -523,7 +523,7 @@ function normalizeBarcelonaAgendaEvent(row, date) {
   const road = pickField(row, ["addresses_road_name"]) ?? "";
   const number = pickField(row, ["addresses_start_street_number"]) ?? "";
   const address = [roadType, road, number].filter(Boolean).join(" ") || "Barcelona";
-  const sourceUrl = "https://www.barcelona.cat/barcelonacultura/en/agenda";
+  const sourceUrl = "https://guia.barcelona.cat/en/";
   const matchedVenue = matchVenue(name, rawVenue, address);
   const venue = matchedVenue?.name ?? rawVenue;
   const rowLat = Number(pickField(row, ["geo_epgs_4326_lat"]));
@@ -899,7 +899,7 @@ function enrichConcertConfidence(concert) {
   if (concert.source !== "Barcelona Open Data") confidence += 8;
   if (matchedVenue) confidence += 28;
   if (!vagueVenue) confidence += 10;
-  if (concert.ticketUrl && !concert.ticketUrl.includes("barcelonacultura")) confidence += 8;
+  if (concert.ticketUrl && !concert.ticketUrl.includes("guia.barcelona.cat")) confidence += 8;
   if (concert.name.toLowerCase().includes("concert")) confidence += 5;
   if (concert.name.toLowerCase().includes("festival")) confidence -= vagueVenue ? 12 : 2;
   if (vagueVenue) confidence -= 20;

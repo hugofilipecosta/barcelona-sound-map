@@ -308,7 +308,7 @@ function ResultRow({ result }: { result: SoundResult }) {
   const moodTags = result.moods.filter((mood) => mood !== "Any mood");
   const primaryUrl = isConcert ? result.ticketUrl : result.websiteUrl;
   const primaryLabel = isConcert
-    ? result.ticketUrl.includes("barcelonacultura")
+    ? result.ticketUrl.includes("guia.barcelona.cat")
       ? "Agenda"
       : "Tickets"
     : result.type === "spot"
