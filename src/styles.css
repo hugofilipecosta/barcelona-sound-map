@@ -3,17 +3,18 @@
   font-family:
     Arial, Helvetica, sans-serif;
   --bg: #000;
-  --paper: #fff;
-  --paper-2: #fff;
-  --ink: #000;
-  --muted: #333;
-  --line: #000;
-  --line-strong: #000;
+  --paper: #000;
+  --paper-2: #000;
+  --ink: #fff;
+  --muted: #999;
+  --line: #fff;
+  --line-strong: #fff;
   --green: #ff6700;
   --green-deep: #000;
   --green-soft: #ff6700;
   --coral: #000;
   --yellow: #ff6700;
+  --orange: #ff6700;
   --shadow: none;
 }
 
@@ -188,7 +189,7 @@ h1 {
   min-height: 48px;
   border: 3px solid var(--line);
   border-radius: 0;
-  background: #fff;
+  background: var(--paper);
   color: var(--ink);
   padding: 0 12px;
   font-size: 15px;
@@ -197,8 +198,8 @@ h1 {
 
 .filters select {
   appearance: none;
-  background-color: #fff;
-  background-image: url("data:image/svg+xml,%3Csvg width='22' height='22' viewBox='0 0 22 22' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 8L11 15L18 8' stroke='black' stroke-width='4' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  background-color: var(--paper);
+  background-image: url("data:image/svg+xml,%3Csvg width='22' height='22' viewBox='0 0 22 22' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 8L11 15L18 8' stroke='white' stroke-width='4' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
   background-position: right 18px center;
   background-repeat: no-repeat;
   background-size: 22px 22px;
@@ -233,8 +234,8 @@ h1 {
   margin-top: 14px;
   padding: 12px;
   border: 3px solid var(--line);
-  background: #fff;
-  color: #000;
+  background: var(--paper);
+  color: var(--ink);
   box-shadow: 5px 5px 0 var(--orange);
 }
 
@@ -244,7 +245,7 @@ h1 {
   align-items: center;
   justify-content: center;
   min-height: 34px;
-  border: 3px solid #000;
+  border: 3px solid var(--line-strong);
   padding: 4px 9px;
   font-size: 12px;
   font-weight: 950;
@@ -254,11 +255,12 @@ h1 {
 
 .source-status > strong {
   background: var(--orange);
+  color: #000;
 }
 
 .source-status span {
   margin-right: 8px;
-  background: #fff;
+  background: var(--paper);
 }
 
 .source-status p {
@@ -282,7 +284,7 @@ h1 {
   border: 1px solid var(--line-strong);
   border-width: 3px;
   border-radius: 0;
-  background: #fff;
+  background: var(--paper);
   color: var(--ink);
   box-shadow: var(--shadow);
 }
@@ -308,7 +310,7 @@ h1 {
 
 .view-switcher button.active {
   background: var(--green);
-  border-color: #000;
+  border-color: #fff;
   color: #000;
 }
 
@@ -344,7 +346,6 @@ h1 {
 .content-preloader .brand-mark {
   width: 32px;
   height: 32px;
-  border-color: #000;
   font-size: 10px;
 }
 
@@ -541,7 +542,7 @@ h1 {
   place-items: center;
   background: var(--green-soft);
   color: #000;
-  border: 3px solid #000;
+  border: 3px solid #fff;
   border-radius: 0;
   font-weight: 900;
 }

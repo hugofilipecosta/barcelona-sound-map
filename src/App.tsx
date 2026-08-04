@@ -54,7 +54,7 @@ interface ApiPayload {
 }
 
 export function App() {
-  const [dateRange, setDateRange] = useState<DateRangeOption>("this-week");
+  const [dateRange, setDateRange] = useState<DateRangeOption>("next-month");
   const [neighborhood, setNeighborhood] =
     useState<Neighborhood>("All Barcelona");
   const [radiusKm, setRadiusKm] = useState(12);
