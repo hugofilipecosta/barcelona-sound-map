@@ -347,9 +347,6 @@ function ResultRow({ result }: { result: SoundResult }) {
 
   return (
     <article className="result-row">
-      <div className={`type-strip ${result.type}`}>
-        {isConcert ? "Live" : result.type === "spot" ? "Listen" : "Store"}
-      </div>
       <div className="result-main">
         <div className="result-topline">
           {isConcert ? <span className="date-badge">{formatConcertDate(result.date)}</span> : null}
