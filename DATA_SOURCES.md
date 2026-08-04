@@ -194,6 +194,96 @@ Needs:
 
 - `TICKETLINE_FEED_URL`
 
+### 11. Songkick
+
+Use for:
+
+- broad concert/tour-date aggregation (6M+ upcoming and past concerts)
+- event search by artist, venue, date, location, or metro area
+- artist-level tour tracking, similar-artist recommendations
+
+Why:
+
+- aggregates listings across many ticketing sources
+- useful backstop for shows Ticketmaster/Eventbrite don't cover directly
+
+Needs:
+
+- A paid partnership: per https://www.songkick.com/developer, Songkick is "not
+  approving API requests for student projects, educational purposes or hobbyist
+  purposes" — access requires signing a partnership agreement and paying a
+  "standard license fee" via their inquiry form. Not a self-serve API key.
+
+## Media / Directory Sources (no public API)
+
+These surface real events but don't offer official developer APIs — the only way
+in is scraping their public listing pages, which is fragile (breaks whenever they
+redesign) and often against their terms of service. Documented here as candidates
+only; not wired into the app unless a legitimate access path shows up (partner
+API, licensed feed, official data-share agreement).
+
+### 12. Time Out Barcelona
+
+Use for:
+
+- editorial event picks
+- nightlife and one-off events
+- cultural coverage broader than ticketed shows (pop-ups, market shows, free events)
+
+Why:
+
+- strong local editorial curation
+- catches things ticketing APIs miss
+
+Needs:
+
+- No public API or RSS feed. Scraping timeout.com/barcelona is the only technical
+  path, or a licensing/partner conversation with Time Out.
+
+### 13. Resident Advisor (RA)
+
+Use for:
+
+- electronic music and club nights
+- promoter/venue listings for nightlife
+
+Why:
+
+- the reference directory for Barcelona's electronic scene
+- strong promoter and lineup data
+
+Needs:
+
+- No public API. RA has historically been protective of scraping its listings —
+  same caveat as Time Out.
+
+### 14. DondeGo
+
+A local Barcelona/Madrid news outlet (EVENTOS&LUGARES AGREGADOR S.L.) building an
+events/places/news API, announced at
+https://dev.to/dondego/we-built-an-api-for-events-places-and-local-news-in-barcelona-and-madrid-1409.
+Different from Time Out/RA above: this one is heading toward a real API, just
+not usable yet — no path to reach it by scraping either.
+
+Use for:
+
+- general local events and places (not concert-specific; music-category depth
+  is unconfirmed)
+- possible local-news texture alongside Barcelona Open Data
+
+Why:
+
+- purpose-built for Barcelona/Madrid, not a generic aggregator
+- author is explicitly inviting outreach from projects that need this data
+
+Needs:
+
+- No live endpoint, documented auth, or pricing found as of this writing. The
+  article's example requests (`/api/v1/events/?lat=...&lon=...&date=hoy`) omit
+  a real host, and the linked GitHub repo (`revanbcn/DondeGo-API`) 404s.
+- Access is "opening gradually" per the author — the actual next step is
+  emailing bcn@dondego.es to ask directly, not a self-serve signup.
+
 ## Local Barcelona Venue Layer
 
 This is how the app becomes genuinely useful instead of generic.
@@ -262,6 +352,10 @@ Keep a curated list for high-signal stores:
 7. Add Bandsintown artist-following mode.
 8. Add DICE/FNAC/Ticketline when access is available.
 9. Add Shotgun if nightlife/party coverage becomes a priority.
+10. Add Songkick if the license fee and paid-partnership path make sense.
+11. Revisit Time Out / Resident Advisor only if a partner or licensed data path
+    opens up — no scraping.
+12. Follow up with DondeGo (bcn@dondego.es) if their API opens more broadly.
 
 ## Product Rule
 
