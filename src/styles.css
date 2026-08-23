@@ -264,7 +264,7 @@ h1 {
 }
 
 .view-switcher button.active {
-  background: var(--green);
+  background: #fff;
   border-color: #fff;
   color: #000;
 }
@@ -346,7 +346,7 @@ h1 {
 }
 
 .result-topline .date-badge {
-  background: var(--orange);
+  background: #fff;
   color: #000;
   font-weight: 950;
 }
