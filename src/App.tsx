@@ -180,6 +180,19 @@ export function App() {
           <h1>Find tonight's record-store stop and show.</h1>
         </div>
 
+        <nav className="view-switcher" aria-label="Result view">
+          {(["Concerts", "Record stores", "Listening bars"] as ViewMode[]).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              className={viewMode === mode ? "active" : ""}
+              onClick={() => setViewMode(mode)}
+            >
+              {mode}
+            </button>
+          ))}
+        </nav>
+
         <form className="filters">
           <label>
             <span>Date</span>
@@ -235,19 +248,6 @@ export function App() {
 
       <section className="workspace">
         <div className="results-column">
-          <nav className="view-switcher" aria-label="Result view">
-            {(["Concerts", "Record stores", "Listening bars"] as ViewMode[]).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                className={viewMode === mode ? "active" : ""}
-                onClick={() => setViewMode(mode)}
-              >
-                {mode}
-              </button>
-            ))}
-          </nav>
-
           <div className="result-count">
             <span>
               <strong>{visibleResults.length}</strong> useful matches
