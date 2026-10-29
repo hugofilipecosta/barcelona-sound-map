@@ -1,5 +1,5 @@
-import { concerts, listeningSpots, stores } from "../data/seed";
-import type { ListeningSpotResult, Mood, Neighborhood, SoundResult } from "../types";
+import { listeningSpots, stores } from "../data/seed";
+import type { ConcertResult, ListeningSpotResult, Mood, Neighborhood, SoundResult } from "../types";
 
 export interface SearchFilters {
   dateStart: string;
@@ -11,7 +11,7 @@ export interface SearchFilters {
 
 export function searchSoundMap(
   filters: SearchFilters,
-  concertResults = concerts,
+  concertResults: ConcertResult[] = [],
   storeResults = stores,
   spotResults: ListeningSpotResult[] = listeningSpots,
 ): SoundResult[] {

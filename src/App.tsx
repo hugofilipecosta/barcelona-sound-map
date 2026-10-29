@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { MapIcon, SearchIcon, TicketIcon } from "./components/Icons";
+import { Loader } from "./components/Loader";
 import { RouteMap } from "./components/RouteMap";
 import {
-  concerts as seededConcerts,
   listeningSpots as seededListeningSpots,
   stores as seededStores,
 } from "./data/seed";
@@ -38,9 +38,11 @@ const moods: Mood[] = [
   "Hiphop / Funk",
 ];
 
+const DEFAULT_RADIUS_KM = 12;
+
 type ViewMode = "Concerts" | "Record stores" | "Listening bars";
 type FetchState = "idle" | "loading" | "partial" | "live" | "fallback" | "error";
-type DateRangeOption = "this-week" | "next-week" | "this-month" | "next-month";
+type DateRangeOption = "today" | "this-week" | "next-week" | "this-month" | "next-month";
 
 interface ApiPayload {
   concerts?: ConcertResult[];
@@ -57,15 +59,14 @@ export function App() {
   const [dateRange, setDateRange] = useState<DateRangeOption>("next-month");
   const [neighborhood, setNeighborhood] =
     useState<Neighborhood>("All Barcelona");
-  const [radiusKm, setRadiusKm] = useState(12);
   const [mood, setMood] = useState<Mood>("Any mood");
   const [viewMode, setViewMode] = useState<ViewMode>("Concerts");
   const [concertResults, setConcertResults] =
-    useState<ConcertResult[]>(seededConcerts);
+    useState<ConcertResult[]>([]);
   const [storeResults, setStoreResults] = useState<StoreResult[]>(seededStores);
   const [spotResults, setSpotResults] =
     useState<ListeningSpotResult[]>(seededListeningSpots);
-  const [fetchState, setFetchState] = useState<FetchState>("idle");
+  const [fetchState, setFetchState] = useState<FetchState>("loading");
   const autoFetched = useRef(false);
 
   const selectedDateRange = useMemo(() => getDateRange(dateRange), [dateRange]);
@@ -75,10 +76,10 @@ export function App() {
       dateStart: selectedDateRange.start,
       dateEnd: selectedDateRange.end,
       neighborhood,
-      radiusKm,
+      radiusKm: DEFAULT_RADIUS_KM,
       mood,
     }),
-    [selectedDateRange, neighborhood, radiusKm, mood],
+    [selectedDateRange, neighborhood, mood],
   );
 
   const results = useMemo(
@@ -118,7 +119,6 @@ export function App() {
         applyApiPayload(refreshedPayload, "live");
       }
     } catch {
-      setConcertResults((current) => (current.length ? current : seededConcerts));
       setStoreResults((current) => (current.length ? current : seededStores));
       setSpotResults((current) => (current.length ? current : seededListeningSpots));
       setFetchState("error");
@@ -131,7 +131,7 @@ export function App() {
     const url = new URL(baseUrl, window.location.origin);
     url.searchParams.set("dateStart", selectedDateRange.start);
     url.searchParams.set("dateEnd", selectedDateRange.end);
-    url.searchParams.set("radiusKm", String(radiusKm));
+    url.searchParams.set("radiusKm", String(DEFAULT_RADIUS_KM));
     url.searchParams.set("format", "json");
     Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
 
@@ -144,7 +144,7 @@ export function App() {
     const hasConcerts = (payload.concerts?.length ?? 0) > 0;
     const hasStores = (payload.stores?.length ?? 0) > 0;
     const hasSpots = (payload.spots?.length ?? 0) > 0;
-    const nextConcerts = hasConcerts ? payload.concerts ?? [] : seededConcerts;
+    const nextConcerts = payload.concerts ?? [];
     const nextStores = hasStores ? payload.stores ?? [] : seededStores;
     const nextSpots = hasSpots ? payload.spots ?? [] : seededListeningSpots;
 
@@ -200,6 +200,7 @@ export function App() {
               value={dateRange}
               onChange={(event) => setDateRange(event.target.value as DateRangeOption)}
             >
+              <option value="today">Today</option>
               <option value="this-week">This week</option>
               <option value="next-week">Next week</option>
               <option value="this-month">This month</option>
@@ -217,18 +218,6 @@ export function App() {
               {neighborhoods.map((item) => (
                 <option key={item}>{item}</option>
               ))}
-            </select>
-          </label>
-          <label>
-            <span>Radius</span>
-            <select
-              value={radiusKm}
-              onChange={(event) => setRadiusKm(Number(event.target.value))}
-            >
-              <option value={2}>2 km</option>
-              <option value={4}>4 km</option>
-              <option value={8}>8 km</option>
-              <option value={12}>12 km</option>
             </select>
           </label>
           <label>
@@ -252,21 +241,19 @@ export function App() {
             <span>
               <strong>{visibleResults.length}</strong> useful matches
             </span>
-            <span>{resultStatusLabel(fetchState)}</span>
           </div>
 
-          {isConnecting(fetchState) ? (
-            <div className="content-preloader" role="status" aria-label="Fetching results">
-              <span className="brand-mark loading">BSM</span>
-              <span>Fetching results…</span>
-            </div>
+          {isConnecting(fetchState) && visibleResults.length > 0 ? (
+            <Loader compact />
           ) : null}
 
           <div className="results-list">
             {visibleResults.length > 0 ? (
-              visibleResults.map((result) => (
-                <ResultRow key={result.id} result={result} />
+              visibleResults.map((result, index) => (
+                <ResultRow key={result.id} result={result} index={index} />
               ))
+            ) : isConnecting(fetchState) ? (
+              <Loader />
             ) : (
               <EmptyState />
             )}
@@ -303,20 +290,23 @@ export function App() {
   );
 }
 
-function ResultRow({ result }: { result: SoundResult }) {
+function ResultRow({ result, index }: { result: SoundResult; index: number }) {
   const isConcert = result.type === "concert";
   const moodTags = result.moods.filter((mood) => mood !== "Any mood");
   const primaryUrl = isConcert ? result.ticketUrl : result.websiteUrl;
+  const concertLabels = { event: "Event page", venue: "Venue", search: "Find info" };
   const primaryLabel = isConcert
-    ? result.ticketUrl.includes("guia.barcelona.cat")
-      ? "Agenda"
-      : "Tickets"
+    ? (result.ticketKind ? concertLabels[result.ticketKind] : "Tickets")
     : result.type === "spot"
       ? "Website"
       : "Shop";
+  const showWebsite = Boolean(result.sourceUrl) && result.sourceUrl !== primaryUrl;
 
   return (
-    <article className="result-row">
+    <article
+      className="result-row"
+      style={{ "--i": Math.min(index, 5) } as CSSProperties}
+    >
       <div className="result-main">
         <div className="result-topline">
           {isConcert ? <span className="date-badge">{formatConcertDate(result.date)}</span> : null}
@@ -326,7 +316,7 @@ function ResultRow({ result }: { result: SoundResult }) {
         </div>
         <h2>{result.name}</h2>
         <p>{isConcert ? result.venue : result.specialties.join(", ")}</p>
-        <p className="note">{result.note}</p>
+        {result.note ? <p className="note">{result.note}</p> : null}
         {moodTags.length > 0 || isConcert ? (
           <div className="detail-line">
             {moodTags.map((mood) => (
@@ -350,9 +340,11 @@ function ResultRow({ result }: { result: SoundResult }) {
           <TicketIcon />
           <span>{primaryLabel}</span>
         </a>
-        <a className="action-link" href={result.sourceUrl} target="_blank" rel="noreferrer">
-          <span>Website</span>
-        </a>
+        {showWebsite ? (
+          <a className="action-link" href={result.sourceUrl} target="_blank" rel="noreferrer">
+            <span>Website</span>
+          </a>
+        ) : null}
       </div>
     </article>
   );
@@ -365,6 +357,11 @@ function isConnecting(fetchState: FetchState) {
 function getDateRange(option: DateRangeOption) {
   const today = startOfDay(new Date());
   const monday = startOfWeek(today);
+
+  if (option === "today") {
+    const day = toDateInputValue(today);
+    return { start: day, end: day, label: "Today" };
+  }
 
   if (option === "next-week") {
     const start = addDays(monday, 7);
@@ -429,14 +426,6 @@ function formatConcertDate(date: string) {
   return `${day}/${month}`;
 }
 
-function resultStatusLabel(fetchState: FetchState) {
-  if (fetchState === "loading") return "Showing partial list while sources connect";
-  if (fetchState === "partial") return "Partial results visible; live sources still connecting";
-  if (fetchState === "live") return "Updated from live and configured sources";
-  if (fetchState === "error") return "Partial results kept visible";
-  return "Sources shown on every result";
-}
-
 function RouteStep({
   step,
   label,
@@ -469,12 +458,8 @@ function RouteStep({
 function EmptyState() {
   return (
     <div className="empty-state">
-      <h2>No confident matches yet.</h2>
-      <p>
-        Try a wider radius, switch to Any mood, or pick another date. The app
-        should suggest useful alternatives instead of pretending the city is
-        empty.
-      </p>
+      <h2>Nothing matches yet.</h2>
+      <p>Try another date, a different neighborhood, or switch to any mood.</p>
     </div>
   );
 }

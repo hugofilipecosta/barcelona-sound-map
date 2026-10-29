@@ -277,7 +277,7 @@ function store({
   distanceKm,
   websiteUrl,
   specialties,
-  note = "Curated Barcelona record-store registry. Live place sources can enrich hours and metadata.",
+  note = "",
 }) {
   return {
     id,

@@ -513,6 +513,38 @@ async function fetchOpenStreetMapRecordStores({ providerStatus }) {
   }
 }
 
+const AGENDA_URL = "https://guia.barcelona.cat/en/";
+const SKIPPED_LINK_HOSTS = /(^|\.)(facebook\.com|twitter\.com|x\.com|wa\.me|api\.whatsapp\.com)$/i;
+
+export function extractEventLinks(row) {
+  const found = [];
+  for (const value of Object.values(row ?? {})) {
+    if (typeof value !== "string") continue;
+    for (const match of value.matchAll(/https?:\/\/[^\s"'<>)]+/gi)) {
+      const raw = match[0].replace(/&amp;/g, "&").replace(/[.,;]+$/, "");
+      let url;
+      try {
+        url = new URL(raw);
+      } catch {
+        continue;
+      }
+      const isRoot = url.pathname === "/" && !url.search;
+      const isGenericAgenda = url.hostname === "guia.barcelona.cat" || /barcelonacultura\/(en|ca|es)\/?$/.test(url.pathname);
+      if (isRoot || isGenericAgenda || SKIPPED_LINK_HOSTS.test(url.hostname)) continue;
+      if (!found.includes(url.href)) found.push(url.href);
+    }
+  }
+  return found;
+}
+
+export function bestConcertLink(row, name, venue, matchedVenue) {
+  const [eventUrl] = extractEventLinks(row);
+  if (eventUrl) return { url: eventUrl, kind: "event" };
+  if (matchedVenue?.website) return { url: matchedVenue.website, kind: "venue" };
+  const query = encodeURIComponent(`${stripHtml(name)} ${stripHtml(venue)} Barcelona`);
+  return { url: `https://www.google.com/search?q=${query}`, kind: "search" };
+}
+
 function normalizeBarcelonaAgendaEvent(row, date) {
   const name = pickField(row, ["name"]) ?? "Barcelona agenda event";
   const rawVenue =
@@ -523,9 +555,9 @@ function normalizeBarcelonaAgendaEvent(row, date) {
   const road = pickField(row, ["addresses_road_name"]) ?? "";
   const number = pickField(row, ["addresses_start_street_number"]) ?? "";
   const address = [roadType, road, number].filter(Boolean).join(" ") || "Barcelona";
-  const sourceUrl = "https://guia.barcelona.cat/en/";
   const matchedVenue = matchVenue(name, rawVenue, address);
   const venue = matchedVenue?.name ?? rawVenue;
+  const link = bestConcertLink(row, name, venue, matchedVenue);
   const rowLat = Number(pickField(row, ["geo_epgs_4326_lat"]));
   const rowLon = Number(pickField(row, ["geo_epgs_4326_lon"]));
 
@@ -551,15 +583,14 @@ function normalizeBarcelonaAgendaEvent(row, date) {
     ]),
     source: "Barcelona Open Data",
     freshness: "Live API",
-    sourceUrl,
+    sourceUrl: matchedVenue?.website ?? AGENDA_URL,
     mapUrl: mapSearchUrl(venue, address),
-    ticketUrl: sourceUrl,
+    ticketUrl: link.url,
+    ticketKind: link.kind,
     date,
     time: timeFromAgenda(row),
     price: "Check agenda",
-    note: matchedVenue
-      ? `Fetched from Barcelona's open cultural agenda and matched to ${matchedVenue.name}.`
-      : "Fetched from Barcelona's open cultural agenda.",
+    note: "",
   };
 }
 
@@ -594,7 +625,7 @@ function normalizeOpenStreetMapStore(element) {
     websiteUrl,
     hours: tags.opening_hours ?? "Check today",
     specialties: storeSpecialties(name, tags),
-    note: "Fetched from OpenStreetMap. Google Places can enrich hours and website confidence later.",
+    note: "",
   };
 }
 
@@ -656,7 +687,7 @@ function normalizeEventbriteEvent(event, date) {
     date,
     time: start.slice(11, 16),
     price: event.is_free ? "Free" : "Check Eventbrite",
-    note: event.summary ?? "Fetched from Eventbrite.",
+    note: event.summary ?? "",
   };
 }
 
@@ -679,7 +710,7 @@ function normalizeDiceEvent(event, date) {
     date,
     time: (event.startDatetime ?? `${date}T00:00:00`).slice(11, 16),
     price: "Check DICE",
-    note: "Fetched from DICE partner access.",
+    note: "",
   };
 }
 
@@ -702,7 +733,7 @@ function normalizeFnacItem(item, date) {
     date,
     time: item.time || "20:00",
     price: item.price || "Check FNAC",
-    note: "Fetched from FNAC/France Billet affiliate feed.",
+    note: "",
   };
 }
 
@@ -725,7 +756,7 @@ function normalizeTicketlineItem(item, date) {
     date,
     time: item.time || "20:00",
     price: item.price || "Check Ticketline",
-    note: "Fetched from Ticketline feed.",
+    note: "",
   };
 }
 
@@ -764,7 +795,7 @@ function normalizeTicketmasterEvent(event, date) {
     date,
     time: dateTime,
     price: priceFromTicketmaster(event),
-    note: "Fetched from Ticketmaster Discovery API.",
+    note: "",
   };
 }
 
@@ -793,7 +824,7 @@ function normalizeBandsintownEvent(event, date) {
     date,
     time: (event.datetime ?? `${date}T20:00:00`).slice(11, 16),
     price: "Check Bandsintown",
-    note: "Fetched from Bandsintown artist-events API.",
+    note: "",
   };
 }
 
@@ -899,7 +930,7 @@ function enrichConcertConfidence(concert) {
   if (concert.source !== "Barcelona Open Data") confidence += 8;
   if (matchedVenue) confidence += 28;
   if (!vagueVenue) confidence += 10;
-  if (concert.ticketUrl && !concert.ticketUrl.includes("guia.barcelona.cat")) confidence += 8;
+  if (concert.ticketUrl && concert.ticketKind !== "search") confidence += 8;
   if (concert.name.toLowerCase().includes("concert")) confidence += 5;
   if (concert.name.toLowerCase().includes("festival")) confidence -= vagueVenue ? 12 : 2;
   if (vagueVenue) confidence -= 20;

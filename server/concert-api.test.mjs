@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  bestConcertLink,
   dedupeConcerts,
+  extractEventLinks,
   dedupeStores,
   isValidRequestRange,
   mapGenres,
@@ -87,5 +89,48 @@ describe("mapGenres", () => {
 
   it("is accent-insensitive", () => {
     expect(mapGenres(["Nit de flamenc a la Plaça"])).toContain("Global");
+  });
+});
+
+describe("extractEventLinks", () => {
+  it("pulls the per-event link out of agenda timetable HTML", () => {
+    const row = {
+      name: "Concert",
+      timetable:
+        '<td><p><a href="https://www.mac.cat/ca/Activitats/visita?a=1&amp;b=2" target="_blank">Més informació</a></p></td>',
+    };
+    expect(extractEventLinks(row)).toEqual(["https://www.mac.cat/ca/Activitats/visita?a=1&b=2"]);
+  });
+
+  it("ignores generic agenda pages, bare homepages, and share links", () => {
+    const row = {
+      a: "https://guia.barcelona.cat/en/",
+      b: "https://www.barcelona.cat/barcelonacultura/en",
+      c: "https://example.com/",
+      d: "https://www.facebook.com/sharer/sharer.php?u=x",
+    };
+    expect(extractEventLinks(row)).toEqual([]);
+  });
+});
+
+describe("bestConcertLink", () => {
+  const venue = { website: "https://www.sala-apolo.com/" };
+
+  it("prefers the event's own page", () => {
+    const row = { x: "https://tickets.example.com/e/123" };
+    expect(bestConcertLink(row, "Show", "Apolo", venue)).toEqual({
+      url: "https://tickets.example.com/e/123",
+      kind: "event",
+    });
+  });
+
+  it("falls back to the venue website, then to a targeted search", () => {
+    expect(bestConcertLink({}, "Show", "Apolo", venue)).toEqual({
+      url: "https://www.sala-apolo.com/",
+      kind: "venue",
+    });
+    const search = bestConcertLink({}, "Show", "Some Hall", undefined);
+    expect(search.kind).toBe("search");
+    expect(search.url).toContain("google.com/search?q=Show%20Some%20Hall%20Barcelona");
   });
 });

@@ -68,6 +68,7 @@ export interface ConcertResult extends BaseResult {
   venue: string;
   price: string;
   ticketUrl: string;
+  ticketKind?: "event" | "venue" | "search";
 }
 
 export interface StoreResult extends BaseResult {
