@@ -6,6 +6,7 @@ import {
   listeningSpots as seededListeningSpots,
   stores as seededStores,
 } from "./data/seed";
+import { pickHeroPhoto } from "./data/heroPhotos";
 import { buildRoute, searchSoundMap } from "./lib/search";
 import type {
   ConcertResult,
@@ -61,6 +62,7 @@ export function App() {
     useState<Neighborhood>("All Barcelona");
   const [mood, setMood] = useState<Mood>("Any mood");
   const [viewMode, setViewMode] = useState<ViewMode>("Concerts");
+  const [heroPhoto] = useState(pickHeroPhoto);
   const [concertResults, setConcertResults] =
     useState<ConcertResult[]>([]);
   const [storeResults, setStoreResults] = useState<StoreResult[]>(seededStores);
@@ -178,6 +180,19 @@ export function App() {
       <section className="search-panel" aria-label="Search Barcelona music">
         <div className="intro">
           <h1>Find tonight's record-store stop and show.</h1>
+          <figure className="hero">
+            <img
+              src={heroPhoto.src}
+              alt={heroPhoto.alt}
+              style={{ objectPosition: heroPhoto.position }}
+              fetchPriority="high"
+            />
+            <figcaption>
+              <a href={heroPhoto.href} target="_blank" rel="noreferrer">
+                {heroPhoto.label} · Photo {heroPhoto.credit}, {heroPhoto.license}
+              </a>
+            </figcaption>
+          </figure>
         </div>
 
         <nav className="view-switcher" aria-label="Result view">
